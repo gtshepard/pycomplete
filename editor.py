@@ -13,16 +13,11 @@ class SimpleEditor:
         self.paste_text = ""
 
     def search(self, line):
-       print(self.document)
-       #re.compile(r"\bd\w*r\b",re.IGNORECASE)
-       pattern = re.compile(r"\b%s\b"%line,re.IGNORECASE)
-       pa = "doog Doctor mocker"
+       pattern = re.compile(r"\b%s\b"%line, re.IGNORECASE)
        if pattern.search(self.document) != None:
-           print("FOUND")
-           print(line)
-           return line
+           return True 
        else:
-           print("FAIL")
+           return False 
 
 
     def cut(self, i, j):
@@ -95,7 +90,7 @@ for n in range({}):
             print("{} text retrieval operations took {} s".format(self.N, get_text_time))
             mispellings_time = timeit.timeit(stmt=self.editor_mispellings,setup=new_editor,number=1)
             print("{} mispelling operations took {} s".format(self.N, mispellings_time))
-
+text_editor = SimpleEditor("i hope that cookies are here")  
 class Tester:
     
     def test_copy(self):
@@ -119,18 +114,20 @@ class Tester:
         pass 
     
     def test_search(self):
-         text_editor.document = "Hello Neeva app Peeps!"
-         expected = "app"
-         result = text_editor.search(expected)
+         text_editor.document = "in the winter its Cold, in the summer its warm."
+         word_to_find = "winter"
+         has_text = text_editor.search(word_to_find)
+         assert has_text
         
 
 if __name__ == "__main__":
    # b = EditorBenchmarker(["hello friends"], 100)
    # b.benchmark()
-   text_editor = SimpleEditor("i hope that cookies are here")  
-   text_editor.search("i hope that cookies")
+
+   #text_editor.search("i hope that cookies")
    tester = Tester()
    tester.test_copy()
+   tester.test_search()
 
    # what about punctuation?
    # clean string, place punctuation back if anything was removed
