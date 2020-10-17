@@ -1,3 +1,4 @@
+import re
 class SimpleEditor:
     def __init__(self, document):
         self.document = document
@@ -11,14 +12,27 @@ class SimpleEditor:
                     self.dictionary.add(word)
         self.paste_text = ""
 
+    def search(self, line):
+       print(self.document)
+       #re.compile(r"\bd\w*r\b",re.IGNORECASE)
+       pattern = re.compile(r"\b%s\b"%line,re.IGNORECASE)
+       pa = "doog Doctor mocker"
+       if pattern.search(self.document) != None:
+           print("FOUND")
+           print(line)
+           return line
+       else:
+           print("FAIL")
+
 
     def cut(self, i, j):
+        # building 3 lists, only need to build one 
         self.paste_text = self.document[i:j]
         self.document = self.document[:i] + self.document[j:]
 
     def copy(self, i, j):
         self.paste_text = self.document[i:j]
-
+        return self.paste_text
     def paste(self, i):
         self.document = self.document[:i] + self.paste_text + self.document[i:]
 
@@ -81,8 +95,49 @@ for n in range({}):
             print("{} text retrieval operations took {} s".format(self.N, get_text_time))
             mispellings_time = timeit.timeit(stmt=self.editor_mispellings,setup=new_editor,number=1)
             print("{} mispelling operations took {} s".format(self.N, mispellings_time))
-            
+
+class Tester:
+    
+    def test_copy(self):
+        text_editor.document = "Hello Neeva Peeps!"
+        expected = "o Ne"
+        result = text_editor.copy(4,8)
+        print(result)
+        assert expected == result  
+    
+    def test_cut(self):
+        text_editor.document = "Cookies and cream!"
+        
+ 
+    def test_paste(self):
+        pass
+ 
+    def test_misspell(self):
+        pass
+ 
+    def test_get_text(self):
+        pass 
+    
+    def test_search(self):
+         text_editor.document = "Hello Neeva app Peeps!"
+         expected = "app"
+         result = text_editor.search(expected)
+        
 
 if __name__ == "__main__":
-    b = EditorBenchmarker(["hello friends"], 100)
-    b.benchmark()
+   # b = EditorBenchmarker(["hello friends"], 100)
+   # b.benchmark()
+   text_editor = SimpleEditor("i hope that cookies are here")  
+   text_editor.search("i hope that cookies")
+   tester = Tester()
+   tester.test_copy()
+
+   # what about punctuation?
+   # clean string, place punctuation back if anything was removed
+   
+   # Performance or Space 
+   # use regular expressions for searching for misspellings?
+   #
+
+   # Features to ADD
+   # text search KMP
