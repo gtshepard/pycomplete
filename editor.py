@@ -3,6 +3,7 @@ class SimpleEditor:
     def __init__(self, document):
         self.document = document
         self.dictionary = set()
+        self.fast_doc = list(self.document)
         # On windows, the dictionary can often be found at:
         # C:/Users/{username}/AppData/Roaming/Microsoft/Spelling/en-US/default.dic
         with open("/usr/share/dict/words") as input_dictionary:
@@ -12,23 +13,48 @@ class SimpleEditor:
                     self.dictionary.add(word)
         self.paste_text = ""
 
+    # determine if string exists in the document 
+    # O(C) time where C is number of characters, O(1) space
     def search(self, line):
        pattern = re.compile(r"\b%s\b"%line, re.IGNORECASE)
        if pattern.search(self.document) != None:
            return True 
        else:
            return False 
-
-
+    
+    # O(C) time O(4C) space
     def cut(self, i, j):
         # building 3 lists, only need to build one 
         self.paste_text = self.document[i:j]
         self.document = self.document[:i] + self.document[j:]
 
+    def super_cut(self, i, j):
+        self.fast_doc = list(self.document)
+        n = len(self.fast_doc)
+        clip_board = []
+
+        fast_doc_edit = [] 
+        while k < n:
+            if i <= k <= j:
+                 fast_doc_edit.append(self.fast_doc[k])
+            else:
+                 clip_board.append(self.fast_doc[k])
+            k += 1
+               
+        print(fast_doc_edit)
+        self.paste_text = ''.join(clip_board)
+        self.document = ''.join(fast_doc_edit)
+        return self.document 
+
+
+    # O(C) time O(C) space
+    # where C is number of characters to copy
     def copy(self, i, j):
         self.paste_text = self.document[i:j]
         return self.paste_text
+
     def paste(self, i):
+        # if we break everything into characters it may work if we join
         self.document = self.document[:i] + self.paste_text + self.document[i:]
 
     def get_text(self):
@@ -55,6 +81,13 @@ for n in range({}):
     else:
         s.paste(2)"""
 
+    editor_super_cut_paste = """
+for n in range({}):
+    if n%2 == 0:
+        s.cut(1, 3)
+    else:
+        s.paste(2)"""
+
     editor_copy_paste = """
 for n in range({}):
     if n%2 == 0:
@@ -74,6 +107,7 @@ for n in range({}):
         self.cases = cases
         self.N = N
         self.editor_cut_paste = self.editor_cut_paste.format(N)
+        self.editor_super_cut_paste = self.editor_super_cut_paste.format(N)
         self.editor_copy_paste = self.editor_copy_paste.format(N)
         self.editor_get_text = self.editor_get_text.format(N)
         self.editor_mispellings = self.editor_mispellings.format(N)
@@ -84,6 +118,8 @@ for n in range({}):
             new_editor = self.new_editor_case.format(case)
             cut_paste_time = timeit.timeit(stmt=self.editor_cut_paste,setup=new_editor,number=1)
             print("{} cut paste operations took {} s".format(self.N, cut_paste_time))
+            super_cut_paste_time = timeit.timeit(stmt=self.editor_super_cut_paste,setup=new_editor,number=1)
+            print("{} super cut paste operations took {} s".format(self.N, cut_paste_time))
             copy_paste_time = timeit.timeit(stmt=self.editor_copy_paste,setup=new_editor,number=1)
             print("{} copy paste operations took {} s".format(self.N, copy_paste_time))
             get_text_time = timeit.timeit(stmt=self.editor_get_text,setup=new_editor,number=1)
@@ -100,18 +136,23 @@ class Tester:
         print(result)
         assert expected == result  
     
-    def test_cut(self):
-        text_editor.document = "Cookies and cream!"
+    def test_super_cut(self):
+        text_editor.document = "What time is the game! i dont want to be late"
+        n = len(text_editor.document)
+        result = text_editor.super_cut(4, n - 1)
+        expected = "time is the game! i dont want to be late"
+        print('result: ',result, 'expected: ', expected)
+        #assert result == expected
+   # def test_cut(self):
+     #   pass
         
+    #def test_paste(self):
+   #     pass
+ # def test_misspell(self):
+     #   pass
  
-    def test_paste(self):
-        pass
- 
-    def test_misspell(self):
-        pass
- 
-    def test_get_text(self):
-        pass 
+   # def test_get_text(self):
+    #    pass 
     
     def test_search(self):
          text_editor.document = "in the winter its Cold, in the summer its warm."
@@ -121,13 +162,14 @@ class Tester:
         
 
 if __name__ == "__main__":
-   # b = EditorBenchmarker(["hello friends"], 100)
-   # b.benchmark()
+    b = EditorBenchmarker(["hello friends and family this is what i do best!!!!"], 100)
+    b.benchmark()
 
    #text_editor.search("i hope that cookies")
-   tester = Tester()
-   tester.test_copy()
-   tester.test_search()
+  # tester = Tester()
+   #tester.test_copy()
+   #tester.test_search()
+   #tester.test_super_cut()
 
    # what about punctuation?
    # clean string, place punctuation back if anything was removed
@@ -138,3 +180,18 @@ if __name__ == "__main__":
 
    # Features to ADD
    # text search KMP
+
+
+   # getting better performance numbers on cut, copy and paste is going to be tough i dont even know 
+   # misspell right now is O(N) time, N words constant time each 
+   # auto complete with trie? but how do you offer this?
+   # maybe make a quick gui? 
+
+   # trie reccomends words as you type? for instance, would recomned words as you go,
+   # gets all words that start with H, then all words that start with HO 
+   # how does it return them all?
+   # you do top 3 to 5 suggestions
+
+
+
+   
