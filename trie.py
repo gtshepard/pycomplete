@@ -35,7 +35,7 @@ class Trie:
             # get the index for the levelth char 
             # of the word to insert
             index = self.get_index(key[level])
-            # if char does not exist 
+            # if char does not exist
             if not curr_node.children[index]:
                 # insert char at current level 
                 curr_node.children[index] = Node(key[level])
@@ -46,6 +46,8 @@ class Trie:
         # letters or not 
         curr_node.mark_as_leaf()
 
+
+    
     def search(self, key):
         if not key:
             return False
@@ -100,7 +102,15 @@ class Trie:
 if __name__ == '__main__':
     t = Trie()
     words = ['hello', 'abc', 'baz', 'bar', 'barz', 'acorn', 'acorns']
-    t.build_trie(words)
-   # t.print_trie()
-    t.same_prefixes("a")
+    all_words = []
+
+    with open("/usr/share/dict/words") as input_dictionary:
+        for line in input_dictionary:
+            words = line.strip().split(" ")
+            for word in words:
+                if word.isalpha():                
+                    all_words.append(word)
+    
+    t.build_trie(all_words)
+    t.same_prefixes("app")
 
