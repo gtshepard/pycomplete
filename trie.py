@@ -71,19 +71,18 @@ class Trie:
         print(result)
 
     def dfs(self, node, word, res):
+        
         if node.is_end_of_word:
             res.append(word)
-            return
+    
         # For each level, go deep down, but DFS fashion 
         # add current char into our current word.
         for child in node.children:
             if child:
                 idx = self.get_index(child.char)
-                print(child.char)
                 self.dfs(node.children[idx], word + child.char, res)
-
     
-    def k_similar(self, key):
+    def same_prefixes(self, key):
         key = key.lower()
         curr_node = self.root
         n = len(key)
@@ -102,6 +101,6 @@ if __name__ == '__main__':
     t = Trie()
     words = ['hello', 'abc', 'baz', 'bar', 'barz', 'acorn', 'acorns']
     t.build_trie(words)
-    t.print_trie()
-    t.k_similar("a")
-    
+   # t.print_trie()
+    t.same_prefixes("a")
+
