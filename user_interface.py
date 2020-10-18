@@ -10,11 +10,13 @@ class MenuBar:
         parent.window.config(menu=menu_bar)
         
         file_dropdown = tk.Menu(menu_bar, font=self.font_specs)
-        file_dropdown.add_command(label="New File", command=parent.new_file)
-        file_dropdown.add_command(label="Open File",command=parent.open_file)
+        file_dropdown.add_command(label="New File",accelerator="Ctrl+N", command=parent.new_file)
+        file_dropdown.add_command(label="Open File", accelerator="Ctrl+O",command=parent.open_file)
         file_dropdown.add_separator()
-        file_dropdown.add_command(label="Save", command=parent.save)
-        file_dropdown.add_command(label="Save As", command=parent.save_as)
+        file_dropdown.add_command(label="Save", accelerator="Ctrl+S", command=parent.save)
+        file_dropdown.add_command(label="Save As",
+                                  accelerator="Ctrl+Shift+S",
+                                  command=parent.save_as)
 
         menu_bar.add_cascade(label="File", menu=file_dropdown)
 
@@ -40,6 +42,7 @@ class PyWord:
         self.char_count = 0
 
         self.filename = None 
+        self.bind_keyboard_shortcuts()
 
     # sets adds features to main window 
     def set_default_window(self, main_window):
@@ -99,12 +102,12 @@ class PyWord:
             self.window.title("unititled - PyWord")
 
 
-    def new_file(self):
+    def new_file(self, *args):
         self.text_arena.delete(1.0, tk.END)
         self.filename = None
         self.set_window_title()
 
-    def open_file(self):
+    def open_file(self, *args):
         self.filename = filedialog.askopenfilename(
             defaultextension = ".txt", 
             filetypes = [("All Files", "*.*"),
@@ -120,7 +123,7 @@ class PyWord:
                 self.text_arena.insert(1.0, f.read())
             self.set_window_title(self.filename)
 
-    def save(self):
+    def save(self, *args):
         if self.filename:
             try:
                 text_content = self.text_arena.get(1.0, tk.END)
@@ -132,7 +135,8 @@ class PyWord:
         else:
             self.save_as()
 
-    def save_as(self):
+    def save_as(self,*args):
+        print("save_as Called")
         try:
             new_file = filedialog.asksaveasfilename(
                 initialfile="Untitled.txt",
@@ -149,9 +153,15 @@ class PyWord:
                 f.write(textarea_content)
             self.filename = new_file
             self.set_window_title(self.filename)
+
         except Exception as e:
             print(e)
-        
+
+    def bind_keyboard_shortcuts(self):
+        self.text_arena.bind('<Control-n>', self.new_file)
+        self.text_arena.bind('<Control-o>', self.open_file)
+        self.text_arena.bind('<Control-s>', self.save)
+        self.text_arena.bind('<Control-S>', self.save_as)
 # reccomends word on panel to side 
 # the 1 key reccomends first word, 2 key reccomends 2nd word and so on
 if __name__ == '__main__': 
