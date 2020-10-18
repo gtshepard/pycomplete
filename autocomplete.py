@@ -33,6 +33,8 @@ class Node:
     
     def unmark_as_leaf(self):
         self.end_of_word -= 1
+    def unmark_as_leaf_to_delete(self):
+        self.end_of_word = 0
 from heapq import *
 
 class LfuTrie:
@@ -74,7 +76,6 @@ class LfuTrie:
         # mark as word end by incrementing frequncy
         curr_node.mark_as_leaf()
    
-
     def search(self, key):
         if not key:
             return False
@@ -95,6 +96,7 @@ class LfuTrie:
         else:
             return False
 
+
     def build_trie(self, file_path):
         with open(file_path) as input_dictionary:
             for line in input_dictionary:
@@ -102,9 +104,57 @@ class LfuTrie:
                 for word in words:
                     self.insert(word)
 
+
+    def delete(self, key):
+        if not self.root or not key:
+            print("Empty Trie")
+            return 
+        self.delete_helper(key, self.root, len(key),0)
+        
+    def delete_helper(self, key, curr, length, level): 
+        did_delete = False 
+        n = len(key)
+        if not curr:
+            return did_delete
+
+        if level is length:
+            if self.is_childless(curr):
+                curr = None
+                did_delete = True
+            else:
+                curr.unmark_as_leaf_to_delete()
+                did_delete = False 
+        else:
+            child_node = curr.children[self.get_index(key[level])]
+            child_deleted = self.delete_helper(key, child_node, length, level + 1)
+            if child_deleted:
+                current_node.children[self.get_index(key[level])] = None
+
+                if current_node.is_end_word > 0:
+                    did_delete = False 
+
+                elif not self.is_childless(curr):
+                    did_delete = False 
+                else:
+                    curr = None 
+                    did_delete = True
+            else:
+                did_delete = False 
+
+        return did_delete
+
+
+            
+    def is_childless(self, node):
+            n = len(node.children)
+            for i in range(n):
+                if not node.children[i]:
+                    return False 
+            return True 
+
     def print_trie(self):
         result = []
-        self.dfs(self.root, '', result)
+        self.construct_k_words(self.root, '', result)
         print(result)
 
     # trie is a trie where each node has 26 chidren 
@@ -132,8 +182,9 @@ class LfuTrie:
         return curr_node
     
     def delete_least_freq(self):
-        #self.least_freq_used
-        pass
+        key = self.least_freq_used()
+        del self.word_freq[key]
+        self.delete(key)
 
     def least_freq_used(self):
         least_freq = (float('inf'), None)
@@ -186,6 +237,8 @@ class AutoComplete:
         suggested_words = self.__top_k_words__(prefix,k=top_k)
         suggested_words = [x[1] for x in suggested_words]
         self.trie.least_freq_used()
+       # self.trie.delete("whale")
+        self.trie.print_trie()
         return suggested_words
 
 if __name__ == '__main__':
@@ -197,7 +250,7 @@ if __name__ == '__main__':
     a.record_word("when")
     a.record_word("when")
     a.record_word("when")
-    print(a.suggest_words("wh", 5))
+    a.suggest_words("wh", 5)
 
 
     # file_path = "one_hundred_most_common_words.txt"
