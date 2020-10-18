@@ -33,10 +33,13 @@ class Node:
     
     def unmark_as_leaf(self):
         self.end_of_word -= 1
+from heapq import *
 
-class Trie:
+class LfuTrie:
 
     def __init__(self):
+        self.word_freq = {}
+        self.word_freq_inv = {}
         self.root = Node()
         self.build_trie("one_hundred_most_common_words.txt")
     #ascii a char value is 141,
@@ -55,7 +58,7 @@ class Trie:
 
         key = key.lower()
         curr_node = self.root
-
+        self.word_freq[key] = self.word_freq.get(key, 0) + 1
         # maybe make text area only take up 3/4 of page
         for level in range(len(key)):
             # get the index for the levelth char 
@@ -70,9 +73,8 @@ class Trie:
 
         # mark as word end by incrementing frequncy
         curr_node.mark_as_leaf()
+   
 
-
-    
     def search(self, key):
         if not key:
             return False
@@ -87,7 +89,9 @@ class Trie:
             curr_node = curr_node.children[index]
         
         if curr_node and curr_node.end_of_word > 0:
+            self.word_freq[key] += 1
             curr_node.mark_as_leaf()
+            return True 
         else:
             return False
 
@@ -98,30 +102,24 @@ class Trie:
                 for word in words:
                     self.insert(word)
 
-        #for word in words:
-         #   self.insert(word)
-
     def print_trie(self):
         result = []
         self.dfs(self.root, '', result)
         print(result)
 
-    def dfs(self, node, word, res, k=3):
+    # trie is a trie where each node has 26 chidren 
+    # thus we can use DFS to travese it and rebuild words
+    def construct_k_words(self, node, word, res, k=3):
         
         if node.end_of_word > 0:
-            if len(res) < k:
-                res.append(word)
+            res.append((node.end_of_word, word))
 
-        # For each level, go deep down, but DFS fashion 
-        # add current char into our current word.
-        if len(res) < k:
-            for child in node.children:
-                if child:
-                    self.dfs(child, word + child.char, res, k)
-
-    def build_k_words_with_same_prefix(self, key, k):
-      
-        key = key.lower()
+        for child in node.children:
+            if child:
+                self.construct_k_words(child, word + child.char, res, k)
+    
+    def get_end_of_prefix(self, prefix):
+        key = prefix.lower()
         curr_node = self.root
         # find end of prefix in trie 
         n = len(key)
@@ -131,38 +129,78 @@ class Trie:
                 return False 
             curr_node = curr_node.children[index]
 
-        source = curr_node
-        same_prefix = []
+        return curr_node
+    
+    def delete_least_freq(self):
+        #self.least_freq_used
+        pass
 
-        # build k words with specified prefix 
-        self.dfs(source, key, same_prefix, k=k)
-        return same_prefix
+    def least_freq_used(self):
+        least_freq = (float('inf'), None)
+        for word, f in self.word_freq.items():
+            if f < least_freq[0]:
+                least_freq = (f, word)
 
+        return least_freq
 class AutoComplete:
+
     def __init__(self):
         self.word_cache = WordCache()
-        self.trie = Trie()
-        pass
+        self.trie = LfuTrie()
+
+    def __top_k_words__(self, key, k):
+        # get last node of prefix in trie
+        source = self.trie.get_end_of_prefix(key)
+        words_with_same_prefix = []
+        # build k words with specified prefix 
+        self.trie.construct_k_words(source, key, words_with_same_prefix, k=k)
+
+        # same_prefix.sort(reverse=True) # could be rather large 
+        # maybe build heap ? this would be quicker O(N) to build heap
+        # O(N + K)better than N Log N, K is cconstant for us 
+        # k pops to get the element 
+        # 
+        # heapify(same_prefix)
+        n = len(words_with_same_prefix)
+        # negate frequncy for max heap
+        words_with_same_prefix = [(-x[0], x[1]) for x in words_with_same_prefix]
+        # create heap in O(N) time 
+        heapify(words_with_same_prefix)
+        top_k_words = []
+
+        # pop k elements
+        for i in range(k):
+            if words_with_same_prefix:
+                top_k_words.append(heappop(words_with_same_prefix))
+
+        return top_k_words
 
     def record_word(self, word):
         if word in self.word_cache.cache:
             # have to adjust insert so size does not execeede 100
-            self.trie.insert(word)
-       
-
+            have_seen = self.trie.search(word)
+            if not have_seen:
+                self.trie.insert(word)
+    
     def suggest_words(self, prefix, top_k):
-        suggested_words = self.trie.build_k_words_with_same_prefix(prefix,k=top_k)
-        print(suggested_words)
+        suggested_words = self.__top_k_words__(prefix,k=top_k)
+        suggested_words = [x[1] for x in suggested_words]
+        self.trie.least_freq_used()
         return suggested_words
 
 if __name__ == '__main__':
 
-    words = ['hello', 'abc', 'baz', 'bar', 'barz', 'acorn', 'acorns']
-    all_words = []
     a = AutoComplete()
     a.record_word("whale")
-    a.suggest_words("wh", 5)
-   # file_path = "one_hundred_most_common_words.txt"
+    a.record_word("whale")
+    a.record_word("whale")
+    a.record_word("when")
+    a.record_word("when")
+    a.record_word("when")
+    print(a.suggest_words("wh", 5))
+
+
+    # file_path = "one_hundred_most_common_words.txt"
     #t.build_trie(file_path)
     #t.build_k_words_with_same_prefix("wh",k=5)
 
@@ -182,10 +220,19 @@ if __name__ == '__main__':
     # if we restict the size of the trie to 100, we will never run into search issues 
     # and it effectilvely operates in constant time 
 
-    #1. prevent strings that are not real words being placed in trie 
+    # 1. prevent strings that are not real words being placed in trie 
     # this happens when user hits space when a word is misspelled.
     # we check the users input against a 2 word banks - 100 most common words
-    # and dictionary 
+    # and the dictionary 
+
+    # 2. suggested word should be sorted by frequency 
+    # this can done by putting frquncy in a tuple with the word 
+    # then sorting by the frequency of the the first value in the tuple
+
+
+    #2. to keep trie to size 100, we must delete LRU 
+    # this means that we want to delete the word with the smallest freqency first 
+    # 
 
 '''
     with open("/usr/share/dict/words") as input_dictionary:
