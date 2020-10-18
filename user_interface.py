@@ -1,4 +1,5 @@
 import tkinter as tk 
+from tkinter import filedialog
 class MenuBar:
     def __init__(self, parent):
         self.font_specs = ("ubuntu", 14)
@@ -9,11 +10,11 @@ class MenuBar:
         parent.window.config(menu=menu_bar)
         
         file_dropdown = tk.Menu(menu_bar, font=self.font_specs)
-        file_dropdown.add_command(label="New File")
-        file_dropdown.add_command(label="Open File")
+        file_dropdown.add_command(label="New File", command=parent.new_file)
+        file_dropdown.add_command(label="Open File",command=parent.open_file)
         file_dropdown.add_separator()
-        file_dropdown.add_command(label="Save")
-        file_dropdown.add_command(label="Save As")
+        file_dropdown.add_command(label="Save", command=parent.save)
+        file_dropdown.add_command(label="Save As", command=parent.save_as)
 
         menu_bar.add_cascade(label="File", menu=file_dropdown)
 
@@ -21,17 +22,14 @@ class MenuBar:
 
 class PyWord:
     def __init__(self, window):
-
         # sets up intial program window 
         self.window = window
         self.window.bind("<Key>", self.on_user_type)
-        self.window.title("Give Me A Name - PyWord")
+        #self.window.title("Give Me A Name - PyWord")
         self.window.geometry("1200x700")
         self.font_specs = ("ubuntu", 18)
         self.set_default_window(self.window)
         self.menu_bar = MenuBar(self)
-
-
         # this is auto complete window may be a better way to do this like press tab to autocomplete
         # no buttons needed 
         self.canvas = tk.Canvas(self.window, bg="blue", width=300, height=300)
@@ -40,6 +38,8 @@ class PyWord:
         self.y_position_for_word = 10
         self.text_ids = {}
         self.char_count = 0
+
+        self.filename = None 
 
     # sets adds features to main window 
     def set_default_window(self, main_window):
@@ -91,13 +91,72 @@ class PyWord:
     # when i hit the space key autocomplete window should close 
     # when im am typing other characters auto complete winodw
     # should be opening and recommend top 3 words 
+    def set_window_title(self, name=None):
+        # 2 cases 
+        if name:
+            self.window.title(name + "- PyWord")
+        else:
+            self.window.title("unititled - PyWord")
 
 
+    def new_file(self):
+        self.text_arena.delete(1.0, tk.END)
+        self.filename = None
+        self.set_window_title()
+
+    def open_file(self):
+        self.filename = filedialog.askopenfilename(
+            defaultextension = ".txt", 
+            filetypes = [("All Files", "*.*"),
+                         ("Text Files", "*.txt"),
+                         ("Python Scripts", "*.py"),
+                         ("Markdown Document", "*.md")
+                         ]
+            )
+
+        if self.filename:
+            self.text_arena.delete(1.0, tk.END)
+            with open(self.filename, "r") as f:
+                self.text_arena.insert(1.0, f.read())
+            self.set_window_title(self.filename)
+
+    def save(self):
+        if self.filename:
+            try:
+                text_content = self.text_arena.get(1.0, tk.END)
+                with open(self.filename, "w") as f:
+                    f.write(text_content)
+                
+            except Exception as e:
+                print(e)
+        else:
+            self.save_as()
+
+    def save_as(self):
+        try:
+            new_file = filedialog.asksaveasfilename(
+                initialfile="Untitled.txt",
+                defaultextension=".txt",
+                filetypes=[("All Files", "*.*"),
+                           ("Text Files", "*.txt"),
+                           ("Python Scripts", "*.py"),
+                           ("Markdown Documents", "*.md"),
+                           ("JavaScript Files", "*.js"),
+                           ("HTML Documents", "*.html"),
+                           ("CSS Documents", "*.css")])
+            textarea_content = self.text_arena.get(1.0, tk.END)
+            with open(new_file, "w") as f:
+                f.write(textarea_content)
+            self.filename = new_file
+            self.set_window_title(self.filename)
+        except Exception as e:
+            print(e)
+        
 # reccomends word on panel to side 
 # the 1 key reccomends first word, 2 key reccomends 2nd word and so on
-# 
 if __name__ == '__main__': 
     main_window = tk.Tk()
     py_word = PyWord(main_window)
     main_window.mainloop()
     main_window.title("PyWord")
+ 
