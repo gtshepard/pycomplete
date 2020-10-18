@@ -1,3 +1,6 @@
+
+
+
 class Node:
     def __init__(self, char=''):
         self.children = [None] * 26
@@ -11,6 +14,8 @@ class Node:
         self.is_end_of_word = True 
 
 class Trie:
+
+
     def __init__(self):
         self.root = Node()
     #ascii a char value is 141,
@@ -63,9 +68,15 @@ class Trie:
         
         return True if curr_node and curr_node.is_end_of_word else False
 
-    def build_trie(self, words):
-        for word in words:
-            self.insert(word)
+    def build_trie(self, file_path):
+        with open(file_path) as input_dictionary:
+            for line in input_dictionary:
+                words = line.strip().split('\n')
+                for word in words:
+                    self.insert(word)
+
+        #for word in words:
+         #   self.insert(word)
 
     def print_trie(self):
         result = []
@@ -109,6 +120,12 @@ if __name__ == '__main__':
     words = ['hello', 'abc', 'baz', 'bar', 'barz', 'acorn', 'acorns']
     all_words = []
 
+    file_path = "one_hundred_most_common_words.txt"
+    t.build_trie(file_path)
+    t.k_similar("wh",k=5)
+
+
+'''
     with open("/usr/share/dict/words") as input_dictionary:
         for line in input_dictionary:
             words = line.strip().split(" ")
@@ -116,11 +133,7 @@ if __name__ == '__main__':
                 if word.isalpha():                
                     # all_words.append(word)
                     t.insert(word)
-    
-    t.k_similar("app",k=5)
-
-
-
+  '''
 #  O(L + N*W) lookup O(L) time for prefix lookup. O(N*W) where N is the number of words that have the prefix abd W is
 # the is the lenght of the longest word  
 # 
