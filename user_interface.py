@@ -21,6 +21,8 @@ class MenuBar:
 
 class PyWord:
     def __init__(self, window):
+
+        # sets up intial program window 
         self.window = window
         self.window.bind("<Key>", self.on_user_type)
         self.window.title("Give Me A Name - PyWord")
@@ -28,28 +30,29 @@ class PyWord:
         self.font_specs = ("ubuntu", 18)
         self.set_default_window(self.window)
         self.menu_bar = MenuBar(self)
-        #self.auto_suggest_window = AutoSuggestWindow()
+
+
+        # this is auto complete window may be a better way to do this like press tab to autocomplete
+        # no buttons needed 
         self.canvas = tk.Canvas(self.window, bg="blue", width=300, height=300)
         self.canvas.pack(fill="both", side="right", expand=True)
-        #self.canvas.create_text(10,10,text="Hello world!", anchor="nw")
-        #self.canvas.create_text(10,100,text="This is the end of the  words!", anchor="nw")
-        #self.canvas.update()
         self.words = ['cat', 'dog', 'bear', 'frog', 'bird']
         self.y_position_for_word = 10
         self.text_ids = {}
         self.char_count = 0
 
+    # sets adds features to main window 
     def set_default_window(self, main_window):
         self.text_arena = tk.Text(main_window, font=self.font_specs)
         self.scroll_bar = tk.Scrollbar(main_window, command=self.text_arena.yview)
         self.text_arena.configure(yscrollcommand="self.scroll.set")
         self.text_arena.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.scroll_bar.pack(side=tk.RIGHT, fill=tk.Y)
-   
+    
+    # detect user typing, keep a character count so we know the last index 
+    # of the word. 
     def on_user_type(self, key):
         print("The Key I Pressed Was: ", key.char)
-    
-        
         self.clear_words()
         #keep track whe
         if key.char != '\x7f':
@@ -57,6 +60,8 @@ class PyWord:
         else:
             if self.char_count > 0:
                 self.char_count -= 1
+        
+        # right now not hooked up to autocomplete so ignore 
         # add a new set of if not space
         if key.char != ' ':
             words = self.get_words()
@@ -71,9 +76,11 @@ class PyWord:
         #self.text_arena.insert(self.char_count)
         #button1.text 
 
+    # this will grab from autocomplete
     def get_words(self):
         return self.words
 
+    # clears words from canvas will be useful later 
     def clear_words(self):
          for t, _ in self.text_ids.items():
             self.canvas.delete(t)
@@ -85,6 +92,10 @@ class PyWord:
     # when im am typing other characters auto complete winodw
     # should be opening and recommend top 3 words 
 
+
+# reccomends word on panel to side 
+# the 1 key reccomends first word, 2 key reccomends 2nd word and so on
+# 
 if __name__ == '__main__': 
     main_window = tk.Tk()
     py_word = PyWord(main_window)
