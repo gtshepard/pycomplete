@@ -86,8 +86,10 @@ class Trie:
                     self.dfs(child, word + child.char, res, k)
 
     def k_similar(self, key, k):
+      
         key = key.lower()
         curr_node = self.root
+        # find end of prefix in trie 
         n = len(key)
         for level in range(n):
             index = self.get_index(key[level])
@@ -97,6 +99,8 @@ class Trie:
 
         source = curr_node
         same_prefix = []
+
+        # build k words with specified prefix 
         self.dfs(source, key, same_prefix, k=k)
         print(same_prefix)
 
@@ -114,4 +118,14 @@ if __name__ == '__main__':
                     t.insert(word)
     
     t.k_similar("app",k=5)
+
+
+
+#  O(L + N*W) lookup O(L) time for prefix lookup. O(N*W) where N is the number of words that have the prefix abd W is
+# the is the lenght of the longest word  
+# 
+# O(W * L * N) where L is the max word length (depth) and N is the number of words and W is the width of the tree
+# however W is constant at 26, thus we have O(L * N) space
+# compared to a series of maps its more efficient memory wise if we you had as hash map for each word
+# 
 
