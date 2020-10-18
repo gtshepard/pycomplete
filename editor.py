@@ -1,16 +1,20 @@
 import re
+import autocomplete as ac
 class SimpleEditor:
     def __init__(self, document):
         self.document = document
         self.dictionary = set()
         self.fast_doc = list(self.document)
+        self.trie = ac.Trie()
         # On windows, the dictionary can often be found at:
         # C:/Users/{username}/AppData/Roaming/Microsoft/Spelling/en-US/default.dic
         with open("/usr/share/dict/words") as input_dictionary:
             for line in input_dictionary:
                 words = line.strip().split(" ")
                 for word in words:
-                    self.dictionary.add(word)
+                    if word.isalpha():
+                        self.trie.insert(word)
+                        self.dictionary.add(word)
         self.paste_text = ""
 
     # determine if string exists in the document 
@@ -27,25 +31,6 @@ class SimpleEditor:
         # building 3 lists, only need to build one 
         self.paste_text = self.document[i:j]
         self.document = self.document[:i] + self.document[j:]
-
-    def super_cut(self, i, j):
-        self.fast_doc = list(self.document)
-        n = len(self.fast_doc)
-        clip_board = []
-
-        fast_doc_edit = [] 
-        while k < n:
-            if i <= k <= j:
-                 fast_doc_edit.append(self.fast_doc[k])
-            else:
-                 clip_board.append(self.fast_doc[k])
-            k += 1
-               
-        print(fast_doc_edit)
-        self.paste_text = ''.join(clip_board)
-        self.document = ''.join(fast_doc_edit)
-        return self.document 
-
 
     # O(C) time O(C) space
     # where C is number of characters to copy
@@ -107,7 +92,6 @@ for n in range({}):
         self.cases = cases
         self.N = N
         self.editor_cut_paste = self.editor_cut_paste.format(N)
-        self.editor_super_cut_paste = self.editor_super_cut_paste.format(N)
         self.editor_copy_paste = self.editor_copy_paste.format(N)
         self.editor_get_text = self.editor_get_text.format(N)
         self.editor_mispellings = self.editor_mispellings.format(N)
@@ -118,8 +102,6 @@ for n in range({}):
             new_editor = self.new_editor_case.format(case)
             cut_paste_time = timeit.timeit(stmt=self.editor_cut_paste,setup=new_editor,number=1)
             print("{} cut paste operations took {} s".format(self.N, cut_paste_time))
-            super_cut_paste_time = timeit.timeit(stmt=self.editor_super_cut_paste,setup=new_editor,number=1)
-            print("{} super cut paste operations took {} s".format(self.N, cut_paste_time))
             copy_paste_time = timeit.timeit(stmt=self.editor_copy_paste,setup=new_editor,number=1)
             print("{} copy paste operations took {} s".format(self.N, copy_paste_time))
             get_text_time = timeit.timeit(stmt=self.editor_get_text,setup=new_editor,number=1)
