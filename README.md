@@ -120,7 +120,7 @@ this changes the cost of insertion which happens when the user records a word th
 insertion itself is O(L) time. but if the trie is at capacity, the trie must undergo a LFU prune, finding the LFU word can be done in is O(W) time (where W is the number of words) and O(W) space. Deletion can be done in O(L) it, where L is the lenght of the word (just like normal insertion) .
 thus insertion becomes an O(2L + W) operation. 
 
-an algorithm proposed by Shah, Mitra, and Matani, can accomplish caching and finding the LFU word in O(1) time, this could bring the overall runtime of insertion back to O(L). 
+an algorithm proposed by Shah, Mitra, and Matani, can accomplish caching and finding the LFU word in O(1) time, this could bring the overall runtime of insertion back to O(L) time if implemented.
 
 
 
