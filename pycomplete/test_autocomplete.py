@@ -76,7 +76,7 @@ class TestTopK:
         
     def test_insert_many_words(self):
         # add many words to set 
-        file_paths = ["../one_hundred_most_common_words.txt"]
+        file_paths = ["one_hundred_most_common_words.txt"]
         set_of_words = set()
 
         n = len(file_paths)
@@ -107,12 +107,12 @@ class TestTopK:
         assert seen_all_words
 
     def test_search_basic(self):
-        trie = topk.TopkTrie(file_path="../one_hundred_most_common_words.txt")
+        trie = topk.TopkTrie(file_path="one_hundred_most_common_words.txt")
         found = trie.search("I")
         assert found
 
     def test_search_many(self):
-        file_path = "../one_hundred_most_common_words.txt"
+        file_path = "one_hundred_most_common_words.txt"
         trie = topk.TopkTrie(file_path=file_path)
         errors = []
 
@@ -126,7 +126,7 @@ class TestTopK:
         assert not errors
 
     def test_delete_basic(self):
-        file_path = "../one_hundred_most_common_words.txt"
+        file_path = "one_hundred_most_common_words.txt"
         trie = topk.TopkTrie(file_path=file_path)
 
         trie.delete("when")
@@ -142,7 +142,7 @@ class TestTopK:
     def test_delete_many(self):
 
         words_to_delete = ["how", "man","in", "into", "a","her","here","if","make","look","like", "him","I", "his"]
-        trie = topk.TopkTrie(file_path="../one_hundred_most_common_words.txt")
+        trie = topk.TopkTrie(file_path="one_hundred_most_common_words.txt")
 
         # detele words in list
         for w in words_to_delete:
@@ -210,7 +210,7 @@ class TestTopK:
         assert is_deleted and is_deleted_freq
 
     def test_get_end_of_prefix(self):
-        trie = topk.TopkTrie(file_path="../one_hundred_most_common_words.txt")
+        trie = topk.TopkTrie(file_path="one_hundred_most_common_words.txt")
         node = trie.get_end_of_prefix("whe")
         assert node.char == "e"
 
