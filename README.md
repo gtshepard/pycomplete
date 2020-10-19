@@ -53,14 +53,14 @@ The key operation for autocomplete is to be able to find all words with the same
 
 PyComplete uses a trie (prefix tree) data structure to suggest words
 
-  - a trie reduces the complexity to O(M + J), where M is the number of words with the same prefix, and where J is the number of nodes (eahc node holds a character in a word)needed to form K
+  - a trie reduces the complexity to O(P + J), where P is the number of words with the same prefix, and where J is the number of nodes (eahc node holds a character in a word)needed to form K
   
 this is becuase once we reach the prefix in the trie we have to construct all the words with the same prefix, and there could be as many as K of them and we have to may have to go J nodes deep. we reconstruct words in depth first manner starting from the end of the given prefix (DFS on graph has a similar runtime O(V + E), where V is number of vertices and E is number of edges) 
 
 PyCompletes trie is also space optimized. Tries in general are M-ary trees. Where M is the number of children.
 Which have a space complexity O(M * N) where N  is number of nodes 
 
-a node in a trie needs a slot for every charachter that could be stored in the trie. thus if the number of characters is held constant, we reduce
+a node in a trie has a child pointer for every charachter that could be stored in the trie. thus if the number of characters is held constant, we reduce
 the space complexity to O(N) where N is the number of nodes. PyCompletes Trie restricts the the number of characters the trie will store to 28. 26 of these characters for lowercase english alphabet plus two additonal characters ```-``` and ```'``` characters to account for words like ```all-knowing``` and ```we're```
 
 thus our trie has a space complexity O(N) where N is the number of nodes. 
@@ -70,15 +70,20 @@ PyComplete not only suggests words based on prefix, but also based on the freque
 
   - Since this is a core operation of PyComplete and most likely takes place every time a user presses a key. Time Complexity Performance is favored over space compexity.   
   
-      - we first find all M words with the same prefix O(M + J) time and then from there we find the K most frequent words. 
+      - we first find all P words with the same prefix O(P + J) time and then from there we find the K most frequent words. 
   
-          - A naive approach would be to sort all M words, and take the first K words. resulting O(K + M log M)
+      - A naive approach would be to sort all P  words, and take the first K words. resulting O(K + P log P)
       
-          PyComplete uses a heap data structure to find the k most frequent words with the same prefix.
-       
-          to get the freqeun
-  
+      PyComplete uses a heap data structure to find the k most frequent words with the same prefix. PyComplete sacrificies space to improve runtime.(naive approach uses O(1) space).
+      
+          - the heap uses O(P) space and is created in O(P) time with heapfiy 
+          - we then pop the K most frequent elements. each pop is constant time, but we do so K times. each time we pop an element from the heap,  we must perocolate the max back up to the top, since there are initally P elements in the heap, this reuslts in a runtime of K log P time
+          accounting for heapify. O(P + (K log P)), if K is small, which for autocomplete it should be, it is much closer to O(P + log P) which is quite an improvement over the naive solution. 
+          - alittle space is sacrifice a little space for a reduction in runtime 
+      
 
+
+       How does PyComplete record the frequency. Each 
 
 
 we store the frequency of each of word at the last node of the word in the trie. the end_marker, which already exists on a trie. thus we have used no additional space here.
