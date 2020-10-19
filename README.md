@@ -1,9 +1,9 @@
 ### PyComplete 
 
 PyComplete is a python package for AutoComplete.
-Anyone can include pycomplete in there software to add autcomplete to there software. 
+Anyone can include PyXomplete in there software to add autcomplete to there software. 
 
-make sure the pycomplete files pycomplete.py and topktrie.py files are in the same directory as you main project files
+make sure the PyComplete files pycomplete.py and topktrie.py files are in the same directory as you main project files
 ```python 
 import pycomplete
 ```
@@ -30,5 +30,5 @@ The PyComplete interface
   # the top k most frequent words with a given prefix
   def suggest_words(prefix: str, k: int) -> []:
 ```
-The user of pycomplete has the freedom to decide how to use pycomplete in there program 
+The user of PyComplete has the freedom to decide how to use pycomplete in there program 
 PyComplete
