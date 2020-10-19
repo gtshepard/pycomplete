@@ -17,9 +17,6 @@ class WordCache:
                     for word in words:
                         if word.isalpha():                
                             self.cache.add(word)
-
-    def is_valid_word(self, s):
-        return True if s in self.cache else False 
       
 class Node:
     def __init__(self, char=''):
@@ -35,15 +32,19 @@ class Node:
         self.end_of_word -= 1
     def unmark_as_leaf_to_delete(self):
         self.end_of_word = 0
+
+
 from heapq import *
 
 class LfuTrie:
 
     def __init__(self):
+        self.number_of_words = 0
+        self.capacity = 100
         self.word_freq = {}
-        self.word_freq_inv = {}
         self.root = Node()
         self.build_trie("one_hundred_most_common_words.txt")
+  
     #ascii a char value is 141,
     # b is 142 
     # b - a = 1
@@ -57,6 +58,14 @@ class LfuTrie:
     def insert(self, key):
         if not key:
             return 
+
+        # prune trie at capacity (space and time optimization)
+        # faster word construction and less space used
+        # word constructions worst case when we have to construct all words in trie
+        #  is O(C) where C is all the characters. keeping the number of words down 
+        # and adn 
+        if self.number_of_words >= self.capacity:
+            self.lfu_prune()
 
         key = key.lower()
         curr_node = self.root
@@ -75,7 +84,8 @@ class LfuTrie:
 
         # mark as word end by incrementing frequncy
         curr_node.mark_as_leaf()
-   
+        self.number_of_words += 1
+
     def search(self, key):
         if not key:
             return False
@@ -96,7 +106,6 @@ class LfuTrie:
         else:
             return False
 
-
     def build_trie(self, file_path):
         with open(file_path) as input_dictionary:
             for line in input_dictionary:
@@ -110,6 +119,7 @@ class LfuTrie:
             print("Empty Trie")
             return 
         self.delete_helper(key, self.root, len(key),0)
+        self.number_of_words -= 1
         
     def delete_helper(self, key, curr, length, level): 
         did_delete = False 
@@ -154,19 +164,19 @@ class LfuTrie:
 
     def print_trie(self):
         result = []
-        self.construct_k_words(self.root, '', result)
+        self.construct_words(self.root, '', result)
         print(result)
+    
 
-    # trie is a trie where each node has 26 chidren 
-    # thus we can use DFS to travese it and rebuild words
-    def construct_k_words(self, node, word, res, k=3):
-        
+    # trie is a tree where each node has 26 chidren 
+    # thus we can use DFS to travese trie and long the way rebuild words
+    def construct_words(self, node, word, res):
         if node.end_of_word > 0:
             res.append((node.end_of_word, word))
 
         for child in node.children:
             if child:
-                self.construct_k_words(child, word + child.char, res, k)
+                self.construct_words(child, word + child.char, res)
     
     def get_end_of_prefix(self, prefix):
         key = prefix.lower()
@@ -180,19 +190,24 @@ class LfuTrie:
             curr_node = curr_node.children[index]
 
         return curr_node
-    
-    def delete_least_freq(self):
-        key = self.least_freq_used()
-        del self.word_freq[key]
-        self.delete(key)
-
-    def least_freq_used(self):
+        
+    # get least frequently used word
+    def get_lfu(self):
         least_freq = (float('inf'), None)
         for word, f in self.word_freq.items():
             if f < least_freq[0]:
                 least_freq = (f, word)
+        return least_freq[1]
 
-        return least_freq
+    def lfu_prune(self):
+        self.print_trie()
+        key = self.get_lfu()
+        del self.word_freq[key]
+        self.delete(key)
+        print("---------")
+        self.print_trie()
+   
+
 class AutoComplete:
 
     def __init__(self):
@@ -204,7 +219,7 @@ class AutoComplete:
         source = self.trie.get_end_of_prefix(key)
         words_with_same_prefix = []
         # build k words with specified prefix 
-        self.trie.construct_k_words(source, key, words_with_same_prefix, k=k)
+        self.trie.construct_words(source, key, words_with_same_prefix)
 
         # same_prefix.sort(reverse=True) # could be rather large 
         # maybe build heap ? this would be quicker O(N) to build heap
@@ -236,9 +251,6 @@ class AutoComplete:
     def suggest_words(self, prefix, top_k):
         suggested_words = self.__top_k_words__(prefix,k=top_k)
         suggested_words = [x[1] for x in suggested_words]
-        self.trie.least_freq_used()
-       # self.trie.delete("whale")
-        self.trie.print_trie()
         return suggested_words
 
 if __name__ == '__main__':
@@ -247,9 +259,17 @@ if __name__ == '__main__':
     a.record_word("whale")
     a.record_word("whale")
     a.record_word("whale")
+    print(a.trie.number_of_words)
     a.record_word("when")
     a.record_word("when")
     a.record_word("when")
+    a.record_word("dog")
+    a.record_word("dog")
+    #a.trie.print_trie()
+    #print(a.trie.number_of_words)
+    #a.record_word("a")
+    #a.record_word("a")
+  #  a.record_word("a")
     a.suggest_words("wh", 5)
 
 
