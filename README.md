@@ -1,9 +1,9 @@
 ### PyComplete 
 
 PyComplete is a python package for AutoComplete.
-Anyone can include PyXomplete in there software to add autcomplete to there software. 
+Anyone can include PyComplete in there software to add autcomplete to there software. 
 
-make sure the PyComplete files pycomplete.py and topktrie.py files are in the same directory as you main project files
+make sure the PyComplete files ```pycomplete.py``` and ```topktrie.py``` files are in the same directory as your main project files
 ```python 
 import pycomplete
 ```
