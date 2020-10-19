@@ -58,8 +58,7 @@ PyCompletes trie is also space optimized. Tries in general are M-ary trees. Wher
 Which have a space complexity O(M * N) where N  is number of nodes 
 
 a node in a trie needs a slot for every charachter that could be stored in the trie. thus if the number of characters is held constant, we reduce
-the space complexity to O(N) where N is the number of nodes. PyCompletes Trie restricts the the number of characters the trie will store to 28;  
-26 characters for lowercase english alphabet plus ```-``` and ```'``` characters to account for words like ```all-knowing``` and ```we're```
+the space complexity to O(N) where N is the number of nodes. PyCompletes Trie restricts the the number of characters the trie will store to 28. 26 characters for lowercase english alphabet plus ```-``` and ```'``` characters to account for words like ```all-knowing``` and ```we're```
 
 
 
