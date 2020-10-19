@@ -5,7 +5,7 @@ class WordCache:
         self.build_cache()
 
     def build_cache(self):
-        file_paths = ["/usr/share/dict/words", "one_hundred_most_common_words.txt"]
+        file_paths = ["/usr/share/dict/words", "one_hundred_most_common_words.txt", ]
         n = len(file_paths)
         for i in range(n):
             with open(file_paths[i]) as input_dictionary:
@@ -20,7 +20,7 @@ class AutoComplete:
 
     def __init__(self):
         self.word_cache = WordCache()
-        self.trie = topk.TopkTrie(file_path="one_hundred_most_common_words.txt")
+        self.trie = topk.TopkTrie(file_path="one_thousand_words.txt")
 
     def __top_k_words__(self, key, k):
         # get last node of prefix in trie
@@ -61,37 +61,13 @@ class AutoComplete:
         # user has option to add words to dictionary 
         if word in self.word_cache.cache:
             have_seen = self.trie.search(word)
-           # if have_seen:
-                #print("search")
             if not have_seen:
-                #print("insert")
                 self.trie.insert(word)
     
     def suggest_words(self, prefix, k):
         suggested_words = self.__top_k_words__(prefix, k=k)
         suggested_words = [x[1] for x in suggested_words]
         return suggested_words
-
-if __name__ == '__main__':
-
-    a = AutoComplete()
-    a.record_word("whale")
-    a.record_word("whale")
-    a.record_word("whale")
-    print(a.trie.number_of_words)
-    a.record_word("when")
-    a.record_word("when")
-    a.record_word("when")
-    a.record_word("dog")
-    a.record_word("dog")
-    #a.trie.print_trie()
-    #print(a.trie.number_of_words)
-    #a.record_word("a")
-    #a.record_word("a")
-  #  a.record_word("a")
-    a.suggest_words("wh", 5)
-    
-
 
 
     

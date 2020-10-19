@@ -1,6 +1,6 @@
 class Node:
     def __init__(self, char=''):
-        self.children = [None] * 26
+        self.children = [None] * 28
         # marks frequency at end
         self.end_of_word = 0
         self.char = char 
@@ -18,7 +18,7 @@ class TopkTrie:
 
     def __init__(self, file_path=None):
         self.number_of_words = 0
-        self.capacity = 100
+        self.capacity = 1001
         self.word_freq = {}
         self.root = Node()
         if file_path:
@@ -32,9 +32,18 @@ class TopkTrie:
     # thus in a trie node its stored
     # in children[1]
     def get_index(self, t):
+        
+        if t == r"""'""":
+            return 26
+
+        if t == "-":
+            return 27
+
         return ord(t) - ord('a')
     
     def insert(self, key):
+
+        print(key)
         if not key:
             return 
 
@@ -54,6 +63,7 @@ class TopkTrie:
             # get the index for the levelth char 
             # of the word to insert
             index = self.get_index(key[level])
+            print("my_char", key[level], index)
             # if char does not exist
             if not curr_node.children[index]:
                 # insert char at current level 
@@ -181,3 +191,5 @@ class TopkTrie:
         key = self.get_lfu()
         del self.word_freq[key]
         self.delete(key)
+
+
