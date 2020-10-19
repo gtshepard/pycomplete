@@ -42,14 +42,32 @@ The PyComplete interface
   # the top k most frequent words with a given prefix
   def suggest_words(prefix: str, k: int) -> []:
 ```
-The user of PyComplete has the freedom to decide how to use pycomplete in there program 
+
+## Performance 
+
+The key operation for autocomplete is to be able to find all words with the same prefix. This operation must be efficient.
+   
+   - a naive to this problem can be implemented using a list and is done is O(N * M) time and O(N) space, where N is the number of words in the list, M is the length of the prefix. this is becuase we have to check M letters for of the words in the list.
+
+PyComplete uses a trie (prefix tree) data structure to suggest words
+
+- a trie reduces the complexity to O(K + J), where K is the number of words with the same prefix, and where J is the length of the longest word 
+this is becuase once we reach the prefix in the trie we have to construct all the words with the same prefix, and there could be as many as K of them and we have to may have to go J nodes deep. we reconstruct words in depth first manner starting from the end of the given prefix (DFS on graph has a similar runtime O(V + E), where V is number of vertices and E is number of edges) 
+
+PyCompletes trie is also space optimized. Tries in general are M-ary trees. Where M is the number of children.
+Which have a space complexity O(M * N) where N  is number of nodes 
+
+a node in a trie needs a slot for every charachter that could be stored in the trie. thus if the number of characters is held constant, we reduce
+the space complexity to O(N) where N is the number of nodes. PyCompletes Trie restricts the the number of characters the trie will store to 28;  
+26 characters for lowercase english alphabet plus ```-``` and ```'``` characters to account for words like ```all-knowing``` and ```we're```
 
 
-PyComplete uses a trie (prefix tree) data structure suggest words.
 
-the key operations the trie enables us to perform effienctly are word lookup and the task of assembling 
 
-a naive approach for finding all strings with a given prefix useses a list and done is O(n * m) time and O(n) space , where n is the number of words in the list, m is the length of the prefix. this is becuase we have to check m letters for each word in the list.
+
+
+
+
 
 
 
