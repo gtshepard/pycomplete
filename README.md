@@ -43,7 +43,7 @@ The PyComplete interface
   def suggest_words(prefix: str, k: int) -> []:
 ```
 
-## Performance 
+## Performance Tradeoffs
 
 #### Suggest Words Operation 
 
@@ -81,20 +81,46 @@ PyComplete not only suggests words based on prefix, but also based on the freque
           accounting for heapify. O(P + (K log P)), if K is small, which for autocomplete it should be, it is much closer to O(P + log P) which is quite an improvement over the naive solution. 
           - alittle space is sacrifice a little space for a reduction in runtime 
       
+       How does PyComplete store the frequency? the frequency of each word is stored at the last char (node) of each word in the Trie. Tries alwasy have some value to denote the end of a word, thus no additional space is used. a frequency of 0 means that the this node does not mark the end of the word.
+       
+  
+       
+       
+ ### Record Words Operation 
+       
+       
+      How does PyComplete collect the frequency for words? it uses the record_word() operation.  
+      
+      this operation operates in O(W) time where W is the length of the word being recorded. a likely time this may be called is everytime a user finishes typing a word. we search for the word in the trie O(W) time, and if it is not in the trie we insert (O(W) time) the word into the trie. this operation happens in O(N) time
+      if the word is found in the search its frequency. same goes for insert.
+      
+    
+      you may be wondering why PyComplete does not just store the frequency of the word in a map and update it when a word is found in the map. why store the freqencey in the Trie? 
+      
+      this would be O(1) access time to see if the word exists and to update the frequency. 
+      
+      this is because PyComplete wants to keep suggest_words as efficient as possible regardless of its value of K. if frequncy was not stored in the trie getting, getting the frwqucny for the top K words, would take O(K) time. and if K is large this is alot of overhead and will take a toll on PyComplete, because suggestions will be made almost everytime a user presses a key. 
+      
+  
+   
+  
+ ### Avoiding Mistakes and Slow Downs 
+ 
+to keep suggest_words performance stable, PyComplete removes the least frequently used word after the trie reaches it capacity (a parameter set by the user)
+this is for a few reasons, it keeps the space consumed by the Trie bay and words that the user rarely record disappear, but more importantly it reduces the number of words in the trie, that is for any given prefix, it has the chance to reduce the number of of words P with the same Prefix. this keeps P from growing excessivly large over (imagine if words were never deleted. becuase as P grows large, it hurts the runtime O(P + K log P) to construct all words with the same prefix. a core operation of PyComplete. 
+ 
+ 
+Keeping suggest_words perfomance stable, comes with a cost. we sacrifice some performance in regards to the record_word operation. 
 
 
-       How does PyComplete record the frequency. Each 
+this is the cost of finding the Least Frequently Used (LFU) word and deleting it from the trie when it reaches capacity. this means for a user, who is always at or around capacity, every time they record a word the trie must be pruned. 
 
+this changes the cost of insertion which happens when the user records a word that is not in trie. 
 
-we store the frequency of each of word at the last node of the word in the trie. the end_marker, which already exists on a trie. thus we have used no additional space here.
+insertion itself is O(L) time. but if the trie is at capacity, the trie must undergo a LFU prune, finding the LFU word can be done in is O(W) time (where W is the number of words) and O(W) space. Deletion can be done in O(L) it, where L is the lenght of the word (just like normal insertion) .
+thus insertion becomes an O(2L + W) operation. 
 
-
-
-however if our trie grows to large, perfomance can be hindered so precautions must be taken 
-
-
- since this operation is the primary operation, we sarcifce a bit on the runtime of record words, to improve suggest words
-
+an algorithm proposed by Shah, Mitra, and Matani, can accomplish caching and finding the LFU word in O(1) time, this could bring the overall runtime of insertion back to O(L). 
 
 
 
