@@ -16,12 +16,13 @@ class Node:
 from heapq import *
 class TopkTrie:
 
-    def __init__(self):
+    def __init__(self, file_path=None):
         self.number_of_words = 0
         self.capacity = 100
         self.word_freq = {}
         self.root = Node()
-        self.build_trie("one_hundred_most_common_words.txt")
+        if file_path:
+            self.build_trie(file_path)
   
     #ascii a char value is 141,
     # b is 142 
@@ -98,10 +99,12 @@ class TopkTrie:
             return 
         self.delete_helper(key, self.root, len(key),0)
         self.number_of_words -= 1
-        
+
+    # recursively delete word from trie
     def delete_helper(self, key, curr, length, level): 
         did_delete = False 
         n = len(key)
+        
         if not curr:
             return did_delete
 
@@ -131,8 +134,6 @@ class TopkTrie:
 
         return did_delete
 
-
-            
     def is_childless(self, node):
             n = len(node.children)
             for i in range(n):
@@ -145,7 +146,6 @@ class TopkTrie:
         self.construct_words(self.root, '', result)
         print(result)
     
-
     # trie is a tree where each node has 26 chidren 
     # thus we can use DFS to travese trie and long the way rebuild words
     def construct_words(self, node, word, res):
@@ -178,10 +178,6 @@ class TopkTrie:
         return least_freq[1]
 
     def lfu_prune(self):
-        self.print_trie()
         key = self.get_lfu()
         del self.word_freq[key]
         self.delete(key)
-        print("---------")
-        self.print_trie()
-   
