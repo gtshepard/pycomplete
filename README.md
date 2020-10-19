@@ -50,11 +50,10 @@ PyComplete not only suggests words based on prefix, but also based on the freque
 Since this is a core operation of PyComplete and most likely takes place every time a user presses a key. Time Complexity Performance is favored over space compexity.   
 
 we first find all ```P``` words with the same prefix ```O(P + J)``` time and then from there we find the K most frequent words. 
-  
-      - A naive approach would be to sort all P  words, and take the first ```K``` words. resulting ```O(K + P log P)```
+
+A naive approach would be to sort all P  words, and take the first ```K``` words. resulting ```O(K + P log P)```
       
-      PyComplete uses a heap data structure to find the k most frequent words with the same prefix. PyComplete sacrifices to improve runtime. (naive approach uses O(1) space).the heap uses ```O(P)``` space and is created in ```O(P)``` time with heapify 
-we then pop the ```K``` most frequent elements. Each pop is a constant time operation, but we do so ```K``` times. However every time an element is popped, a new max must be percolated to the top, since there are initially P elements in the heap,, percolate  takes O( log P) time, this results in a runtime of ```O(K log P)``` time for popping and element and percolating a  new element to the top. If we take into account building  the heap, we have ```O(P + (K log P))```, if ```K``` is small, which for autocomplete it should be, it is much closer to ```O(P + log P)``` which is quite an improvement over the naive solution. alittle space is sacrifice a little space for a reduction in runtime 
+PyComplete uses a heap data structure to find the k most frequent words with the same prefix. PyComplete sacrifices to improve runtime. (naive approach uses O(1) space).the heap uses ```O(P)``` space and is created in ```O(P)``` time with heapify we then pop the ```K``` most frequent elements. Each pop is a constant time operation, but we do so ```K``` times. However every time an element is popped, a new max must be percolated to the top, since there are initially P elements in the heap,, percolate  takes O( log P) time, this results in a runtime of ```O(K log P)``` time for popping and element and percolating a  new element to the top. If we take into account building  the heap, we have ```O(P + (K log P))```, if ```K``` is small, which for autocomplete it should be, it is much closer to ```O(P + log P)``` which is quite an improvement over the naive solution. alittle space is sacrifice a little space for a reduction in runtime 
 
 How does PyComplete store the frequency? the frequency of each word is stored at the last char (node) of each word in the Trie. Trie’s always have some value to denote the end of a word, thus no additional space is used. a frequency of 0 means that this node does not mark the end of the word.
      
