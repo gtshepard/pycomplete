@@ -121,10 +121,8 @@ insertion itself is ```O(L)``` time. but if the Trie is at capacity, the Trie mu
 
 #### Do we have to take this performance hit? The answer is no.
 
-A caching  algorithm proposed by Shah, Mitra, and Matani, can accomplish caching and finding the LFU word in ```O(1)``` time, this could bring the overall runtime of insertion back to ```O(L)``` time if implemented. If i had more time i would have implemented this caching scheme. 
+A caching  algorithm proposed by Shah, Mitra, and Matani, can accomplish caching and finding the LFU word in ```O(1)``` time, this [Fast LFU Caching](http://dhruvbird.com/lfu.pdf) could bring the overall runtime of insertion back to ```O(L)``` time if implemented. If i had more time i would have implemented this caching scheme. 
 
-An indepth description of the algorithm 
-[Fast LFU Caching Paper](http://dhruvbird.com/lfu.pdf)
 
 
 
