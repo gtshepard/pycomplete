@@ -131,7 +131,7 @@ class TestTopK:
 
         trie.delete("when")
 
-        #construct and clean words
+        # construct and clean words
         constructed_words = []
         trie.construct_words(trie.root, '', constructed_words)  
         constructed_words = [x[1] for x in constructed_words]
@@ -148,7 +148,7 @@ class TestTopK:
         for w in words_to_delete:
             trie.delete(w)
         
-        #construct and clean words from trie
+        #construct and clean words
         constructed_words = []
         trie.construct_words(trie.root, '', constructed_words)  
         constructed_words = [x[1] for x in constructed_words]
@@ -307,10 +307,3 @@ class TestAutoComplete:
         top_k = autocomplete.suggest_words("wh", k=3)
         expected = ["what", "which", "when"]
         assert top_k == expected
-
-
-
-
-if __name__ == '__main__':
-    t = TestAutoComplete()
-    t.test_record_word_many()

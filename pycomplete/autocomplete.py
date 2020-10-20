@@ -32,13 +32,7 @@ class AutoComplete:
             self.trie.construct_words(source, key, words_with_same_prefix)
         else:
             return []
-        # same_prefix.sort(reverse=True) # could be rather large 
-        # maybe build heap ? this would be quicker O(N) to build heap
-        # O(N + K)better than N Log N, K is cconstant for us 
-        # k pops to get the element 
-        # 
-        # heapify(same_prefix)
-        n = len(words_with_same_prefix)
+        
         # negate frequncy for max heap
         words_with_same_prefix = [(-x[0], x[1]) for x in words_with_same_prefix]
         # create heap in O(N) time 
@@ -54,11 +48,8 @@ class AutoComplete:
         return top_k_words
 
     def record_word(self, word):
-        # to avoid suggesting misspelled words
-        # we check it against our dicitonary
-        # some words may not be recored that are infact words
-        # becuase they are not in the dictionary
-        # user has option to add words to dictionary 
+        # avoid recording mispelled words
+        # only words in macOS dictionary checked
         if word in self.word_cache.cache:
             have_seen = self.trie.search(word)
             if not have_seen:
@@ -69,49 +60,58 @@ class AutoComplete:
         suggested_words = [x[1] for x in suggested_words]
         return suggested_words
 
+if __name__ == '__main__':
 
+    autocomplete = AutoComplete()
+    print("---------------------------------------------")
+    print("            Welcome to PyComplete!           ")
+    print("---------------------------------------------")
+    print("PyComplete is preloaded with 1000 words.")
+    print("Each word has a frequency of 1.")
+    print("This demo changes the frequeny of some words.") 
+    print("Then its prompt PyComplete for a suggestion!")
+    print("-----------------------------------------------")
+
+    n, m, p, q = 100, 40, 20, 10 
+    for i in range(n):
+        autocomplete.record_word("what")
     
+    print("what has been recorded %i times"%n)
 
+    for i in range(m):
+        autocomplete.record_word("when")
 
-    # file_path = "one_hundred_most_common_words.txt"
-    #t.build_trie(file_path)
-    #t.build_k_words_with_same_prefix("wh",k=5)
-
-    # how to add frequency to trie?
-    # 1+ represents word end 
-    # 0 represents no word
-    # if try inserted, its mark is set to 1
-    # if a word is searched for and found frequency value is + 1 
+    print("what has been recorded %i times"%m)
+   
+    for i in range(p):
+         autocomplete.record_word("who")
     
-    # if we type a word and hit space, that is not in the trie, then the word 
-    # is pushed into the trie
-    # the issue here is users may type things that are not words
-    # to eliminate this problem we will check the words against the word dictionary
-    # and the 100 most common words dictionary to make sure to only insert real words
-    # we sacrfice a bit of space, for effiecney and accuracy.
-    # we keep the trie smaller by not adding uneeded content and accruate 
-    # if we restict the size of the trie to 100, we will never run into search issues 
-    # and it effectilvely operates in constant time 
+    print("what has been recorded %i times"%p)
 
-    # 1. prevent strings that are not real words being placed in trie 
-    # this happens when user hits space when a word is misspelled.
-    # we check the users input against a 2 word banks - 100 most common words
-    # and the dictionary 
+    for i in range(q):
+        autocomplete.record_word("who")
+    
+    print("what has been recorded %i times"%q)
+    print("""Suggest 3 most frequent words with prefix 'wh'""")
+    print(autocomplete.suggest_words("wh", k=3))
 
-    # 2. suggested word should be sorted by frequency 
-    # this can done by putting frquncy in a tuple with the word 
-    # then sorting by the frequency of the the first value in the tuple
+    print("-----------------------------------------------")
+    for i in range(n):
+        autocomplete.record_word("cook")
+    print("Cook has been recorded %i times"%n)
 
+    for i in range(m):
+        autocomplete.record_word("coat")
+    print("Cook has been recorded %i times"%m)
 
-    #2. to keep trie to size 100, we must delete LRU 
-    # this means that we want to delete the word with the smallest freqency first 
-    # 
+    print("""Suggest 5 most frequent words with prefix 'co'""")
+    print(autocomplete.suggest_words("co", k=5))
 
-#  O(L + N*W) lookup O(L) time for prefix lookup. O(N*W) where N is the number of words that have the prefix abd W is
-# the is the lenght of the longest word  
-# 
-# O(W * L * N) where L is the max word length (depth) and N is the number of words and W is the width of the tree
-# however W is constant at 26, thus we have O(L * N) space
-# compared to a series of maps its more efficient memory wise if we you had as hash map for each word
-# 
-
+    print("-----------------------------------------------")
+    print("be sure to checkout the testcases test_autocomplete.py")
+    print("""run them with 'pytest test_autocomplete.py'""")
+    print("-----------------------------------------------")
+    print("Thanks for Watching The PyComplete Demo =[0.0]  ...!")
+    print("-----------------------------------------------")
+    print(" =[0.0] see you soon =[0.0] ...!")
+    print("-----------------------------------------------")
