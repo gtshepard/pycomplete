@@ -1,6 +1,6 @@
 class Node:
     def __init__(self, char=''):
-        self.children = [None] * 26
+        self.children = [None] * 28
         # marks frequency at end
         self.end_of_word = 0
         self.char = char 
@@ -18,42 +18,41 @@ class TopkTrie:
 
     def __init__(self, file_path=None):
         self.number_of_words = 0
-        self.capacity = 100
+        self.capacity = 1001
         self.word_freq = {}
         self.root = Node()
         if file_path:
             self.build_trie(file_path)
-  
-    #ascii a char value is 141,
-    # b is 142 
-    # b - a = 1
-    # if we index from 0 to 25 
-    # b is in position 1 
-    # thus in a trie node its stored
-    # in children[1]
+    
+    # convert char to index 0 to 27
     def get_index(self, t):
+        
+        if t == r"""'""":
+            return 26
+
+        if t == "-":
+            return 27
+
         return ord(t) - ord('a')
     
     def insert(self, key):
+
         if not key:
             return 
 
-        # prune trie at capacity (space and time optimization)
-        # faster word construction and less space used
-        # word constructions worst case when we have to construct all words in trie
-        #  is O(C) where C is all the characters. keeping the number of words down 
-        # and adn 
+        # prune least frequent element if cacapicty exceeded
         if self.number_of_words >= self.capacity:
             self.lfu_prune()
 
         key = key.lower()
         curr_node = self.root
         self.word_freq[key] = self.word_freq.get(key, 0) + 1
-        # maybe make text area only take up 3/4 of page
+       
         for level in range(len(key)):
             # get the index for the levelth char 
             # of the word to insert
             index = self.get_index(key[level])
+            
             # if char does not exist
             if not curr_node.children[index]:
                 # insert char at current level 
@@ -181,3 +180,5 @@ class TopkTrie:
         key = self.get_lfu()
         del self.word_freq[key]
         self.delete(key)
+
+

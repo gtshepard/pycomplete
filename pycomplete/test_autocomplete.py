@@ -76,20 +76,20 @@ class TestTopK:
         
     def test_insert_many_words(self):
         # add many words to set 
-        file_paths = ["one_hundred_most_common_words.txt"]
+        file_paths = "one_thousand_words.txt"
         set_of_words = set()
 
         n = len(file_paths)
-        for i in range(n):
-            with open(file_paths[i]) as input_dictionary:
-                for line in input_dictionary:
-                    words = line.strip().split('\n')
-                    for word in words:
-                        set_of_words.add(word.lower())
+        #for i in range(n):
+        with open(file_paths) as input_dictionary:
+            for line in input_dictionary:
+                words = line.strip().split('\n')
+                for word in words:
+                    set_of_words.add(word.lower())
 
       
         trie = topk.TopkTrie(file_path=None)
-        trie.build_trie(file_paths[0])
+        trie.build_trie(file_paths)
         constructed_words = []
         trie.construct_words(trie.root, '', constructed_words)
         
@@ -107,12 +107,12 @@ class TestTopK:
         assert seen_all_words
 
     def test_search_basic(self):
-        trie = topk.TopkTrie(file_path="one_hundred_most_common_words.txt")
+        trie = topk.TopkTrie(file_path="one_thousand_words.txt")
         found = trie.search("I")
         assert found
 
     def test_search_many(self):
-        file_path = "one_hundred_most_common_words.txt"
+        file_path = "one_thousand_words.txt"
         trie = topk.TopkTrie(file_path=file_path)
         errors = []
 
@@ -126,12 +126,12 @@ class TestTopK:
         assert not errors
 
     def test_delete_basic(self):
-        file_path = "one_hundred_most_common_words.txt"
+        file_path = "one_thousand_words.txt"
         trie = topk.TopkTrie(file_path=file_path)
 
         trie.delete("when")
 
-        #construct and clean words
+        # construct and clean words
         constructed_words = []
         trie.construct_words(trie.root, '', constructed_words)  
         constructed_words = [x[1] for x in constructed_words]
@@ -142,13 +142,13 @@ class TestTopK:
     def test_delete_many(self):
 
         words_to_delete = ["how", "man","in", "into", "a","her","here","if","make","look","like", "him","I", "his"]
-        trie = topk.TopkTrie(file_path="one_hundred_most_common_words.txt")
+        trie = topk.TopkTrie(file_path="one_thousand_words.txt")
 
         # detele words in list
         for w in words_to_delete:
             trie.delete(w)
         
-        #construct and clean words from trie
+        #construct and clean words
         constructed_words = []
         trie.construct_words(trie.root, '', constructed_words)  
         constructed_words = [x[1] for x in constructed_words]
@@ -210,7 +210,7 @@ class TestTopK:
         assert is_deleted and is_deleted_freq
 
     def test_get_end_of_prefix(self):
-        trie = topk.TopkTrie(file_path="one_hundred_most_common_words.txt")
+        trie = topk.TopkTrie(file_path="one_thousand_words.txt")
         node = trie.get_end_of_prefix("whe")
         assert node.char == "e"
 
@@ -219,16 +219,20 @@ class TestAutoComplete:
     def test_record_word(self):
 
         autocomplete = ac.AutoComplete()
+        print("animal")
         autocomplete.record_word("animal")
         autocomplete.record_word("animal")
         autocomplete.record_word("animal")
 
-        # animal should inserted into trie with frequency of 3 
+        # animal should inserted into trie with frequency of 4,
+        # becuase animal is in the preloaded word list
+        # if change word list, and animal is not in word 
+        # list, this test will fail, just subtract 1 from frenecy 
         constructed_words = []
         autocomplete.trie.construct_words(autocomplete.trie.root, '', constructed_words)  
         word_set = set(constructed_words)
     
-        assert (3, 'animal') in word_set
+        assert (4, 'animal') in word_set
 
 
     def test_record_word_many(self):
@@ -245,11 +249,10 @@ class TestAutoComplete:
         constructed_words = []
         autocomplete.trie.construct_words(autocomplete.trie.root, '', constructed_words)  
         word_set = set(constructed_words)
-        
-        print(word_set)
 
+        expected = [(51, "animal"), (101, "dog"), (66, "bird")]
         is_recorded = True 
-        for pair in record:
+        for pair in expected:
             if pair not in word_set:
                 is_recorded = False 
                 break
@@ -304,6 +307,3 @@ class TestAutoComplete:
         top_k = autocomplete.suggest_words("wh", k=3)
         expected = ["what", "which", "when"]
         assert top_k == expected
-
-
-    
