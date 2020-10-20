@@ -5,10 +5,10 @@
 1. [Overview](#overview)
 2. [How To Run This Project](#how-to-run-this-project)
 3. [Understanding The Performance](#understanding-the-performance)
-  1. [Autocomplete](#autocomplete)
-  2. [K Most Frequent Words](#k-most-frequent-words)
-  3. [Least Frequently Used Pruning](#least-frequently-used-pruning)
-  4. [Avoiding Mistakes and Slow Downs](#avoiding-mistakes-and-slow-downs)
+      a. [Autocomplete](#autocomplete)
+      b. [K Most Frequent Words](#k-most-frequent-words)
+      c. [Least Frequently Used Pruning](#least-frequently-used-pruning)
+      d. [Room For Improvement](#room-for-improvement)
 
 ### Overview 
 
