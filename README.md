@@ -93,9 +93,9 @@ This is because PyComplete wants to keep suggest_words as efficient as possible 
       
 To avoid suggesting  misspelled words, before PyComplete records a word, it makes sure it is a valid word by looking it up in the dictionary. 
 
-### Least Frquently Used Pruning 
+### Least Frequently Used Pruning
  
-to keep performance stable for autocomplete, PyComplete removes the least frequently used word after the Trie reaches it capacity (a parameter set by the user) this is for a few reasons,
+To keep performance stable for autocomplete, PyComplete removes the least frequently used word after the Trie reaches it capacity (a parameter set by the user) this is for a few reasons,
 
 This sets a bound on the number of words in the Trie. Which ultimately leads to a more predictable and stable runtime. 
 
