@@ -46,8 +46,8 @@ The PyComplete interface
  - to use PyComplete in a project
  
 ```python
-   import autocomplete.py
-   import topktie.py
+   import autocomplete as ac 
+   import topktie as tkt
 ```
  
 ## Understanding The Performance 
