@@ -37,7 +37,7 @@ The PyComplete interface
 ## How To Run This Project
 
  - Make sure python3 and pip3 are installed 
- - to install required dependencies type command below 
+ - to install required dependencies type
  ``` pip3 install -r requirements.txt ```
  - for a quick demo run 
  ```Python autocomplete.py```
