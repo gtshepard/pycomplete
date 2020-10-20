@@ -111,7 +111,9 @@ if we never removed any words from the Trie ```P``` over time could theoreticall
 
 Keeping the performance stable came with a cost. The operation that keeps our Trie up to date becomes slower. 
 
-When we prune the Trie to keep it at a set capacity, there is a performance hit to the autocomplete operation. This performance hit comes from  the cost of finding the Least Frequently Used (LFU) word and deleting it from the Trie when it reaches capacity. This happens in ```O(L + W)``` time. while one may thin this does not happen often, however it can. For the user who is hovering around capacity almost every time they record a word the Trie must be pruned. This changes the cost of insertion.
+When we prune the Trie to keep it at a set capacity, there is a performance hit to the autocomplete operation. This performance hit comes from  the cost of finding the Least Frequently Used (LFU) word and deleting it from the Trie when it reaches capacity. 
+
+This happens in ```O(L + W)``` time. while one may thin this does not happen often, however it can. For the user who is hovering around capacity almost every time they record a word the Trie must be pruned. This changes the cost of insertion.
 
 insertion takes place whenever a user records a word, from an autocomplete perspective this could be almost every time the user hits the space key.
 
