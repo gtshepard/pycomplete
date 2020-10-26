@@ -1,15 +1,11 @@
-# Neeva Software Engineer, New Grad 2021, Text Editor Project -  Interview Stage 1 - Garrison Shepard
-
-## PyComplete an Autocomplete Library 
+# PyComplete an Autocomplete Library 
 
 1. [Overview](#overview)
 2. [How To Run This Project](#how-to-run-this-project)
 
 ### Overview 
 
-I chose to work on the text editor project as it best suits my interests and skill set. The project allowed for creative freedom. I chose to focus on adding additional features to the text editor and optimizing the features that I did add. 
-
-I built an autocomplete library for the text editor called PyComplete. 
+PyComplete is an autocomplete library for python.
 
 PyComplete suggests the  ```K``` most frequent words for a given prefix. PyComplete records  input words and adjusts their frequencies. When a prefix is given as input, the ```K``` most frequent words with that prefix are suggested. 
 
