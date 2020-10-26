@@ -15,7 +15,7 @@ PyComplete would suggest: ````what, when, who````.
 
 PyComplete by default remembers the 1000 most frequent words the user type. This is a parameter that the user can change. 
 
-The PyComplete interface 
+### The PyComplete interface 
 
 ```python 
   # record word and update frequency 
